@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Album;
+use App\Models\Photo;
+use App\User;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -9,8 +13,20 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/albums', function () {
+    return Album::All();
+});
+
+Route::get('/photos', function () {
+    return Photo::All();
+});
+
+Route::get('/users', function () {
+    return User::All();
 });

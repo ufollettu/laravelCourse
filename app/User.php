@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -18,6 +17,13 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password',
     ];
+
+    /**
+     * in presenza di doppi nomi su modelli
+     * per mappare il modello con la tabella relativa
+     * usare la seguente proprietà:
+     * protected $table = 'gallery_users';
+     */
 
     /**
      * The attributes that should be hidden for arrays.
