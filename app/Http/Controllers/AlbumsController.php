@@ -24,7 +24,41 @@ class AlbumsController extends Controller
         }
         // dd() dynamic dump utile per stampare le query a schermo
         // dd($sql);
-        return DB::select($sql, $where);
+        // return DB::select($sql, $where);
+        $albums = DB::select($sql, $where);
+        return view('albums.albums', ['albums' => $albums]);
 
+    }
+
+    public function delete($id)
+    {
+        $sql = 'DELETE FROM albums WHERE id= :id';
+        return DB::delete($sql, ['id' => $id]);
+    }
+
+    public function show($id)
+    {
+        $sql = 'SELECT * FROM albums WHERE id= :id';
+        return DB::select($sql, ['id' => $id]);
+    }
+
+    public function edit($id)
+    {
+        $sql = 'SELECT id, album_name, description FROM albums WHERE id= :id';
+        $album = DB::select($sql, ['id' => $id]);
+        return view('albums.edit')->with('album', $album[0]);
+    }
+
+    public function store($id, Request $req)
+    {
+        $data = request()->only(['name', 'description']);
+        $data['id'] = $id;
+
+        $sql = 'UPDATE albums SET album_name =:name, description =:description ';
+        $sql .= ' WHERE id =:id';
+        $res = DB::update($sql, $data);
+        $msg = $res ? 'album con id ' . $id . ' aggiornato' : 'album non aggiornato';
+        session()->flash('message', $msg);
+        return redirect()->route('albums');
     }
 }

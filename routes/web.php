@@ -18,7 +18,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/albums', 'AlbumsController@index');
+Route::get('/albums', 'AlbumsController@index')->name('albums');
+Route::delete('/albums/{id}', 'AlbumsController@delete');
+Route::get('/albums/{id}/edit', 'AlbumsController@edit');
+Route::get('/albums/{id}', 'AlbumsController@show');
+Route::patch('/albums/{id}', 'AlbumsController@store');
 
 Route::get('/photos', function () {
     return Photo::All();
