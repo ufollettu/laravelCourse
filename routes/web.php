@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Album;
 use App\Models\Photo;
 use App\User;
 
@@ -19,9 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/albums', function () {
-    return Album::All();
-});
+Route::get('/albums', 'AlbumsController@index');
 
 Route::get('/photos', function () {
     return Photo::All();
