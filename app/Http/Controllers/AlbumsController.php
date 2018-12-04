@@ -27,7 +27,7 @@ class AlbumsController extends Controller
         // return DB::select($sql, $where);
         $albums = DB::select($sql, $where);
         return view('albums.albums', ['albums' => $albums]);
-
+        $sql .= ' ORDER BY id desc ';
     }
 
     public function delete($id)
@@ -58,6 +58,23 @@ class AlbumsController extends Controller
         $sql .= ' WHERE id =:id';
         $res = DB::update($sql, $data);
         $msg = $res ? 'album con id ' . $id . ' aggiornato' : 'album non aggiornato';
+        session()->flash('message', $msg);
+        return redirect()->route('albums');
+    }
+
+    public function create()
+    {
+        return view('albums.create');
+    }
+
+    public function save()
+    {
+        $data = request()->only(['name', 'description']);
+        $data['user_id'] = 1;
+        $sql = 'INSERT INTO albums (album_name, description, user_id)';
+        $sql .= ' VALUES(:name, :description, :user_id) ';
+        $res = DB::insert($sql, $data);
+        $msg = $res ? 'Album ' . $data['name'] . ' creato' : 'album non creato';
         session()->flash('message', $msg);
         return redirect()->route('albums');
     }
