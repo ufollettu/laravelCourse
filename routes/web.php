@@ -2,6 +2,7 @@
 
 use App\Models\Photo;
 use App\User;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,4 +33,14 @@ Route::get('/photos', function () {
 
 Route::get('/users', function () {
     return User::All();
+});
+
+// querybuilder quesry complessa con leftjoin e where null
+Route::get('usersnoalbums', function () {
+    return DB::table('users as u')
+        ->leftjoin('albums as a', 'a.user_id', 'u.id')
+        ->select('name', 'email', 'u.id')
+        ->whereNull('a.album_name')
+        ->whereRaw()
+        ->get();
 });
