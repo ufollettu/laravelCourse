@@ -109,6 +109,8 @@ class AlbumsController extends Controller
         $album = Album::find($id);
         $album->album_name = request()->input('name');
         $album->description = request()->input('description');
+        $album->user_id = 1;
+        $this->processFile($id, $req, $album);
         $res = $album->save();
 
         // QueryBuilder
@@ -136,7 +138,8 @@ class AlbumsController extends Controller
 
     public function create()
     {
-        return view('albums.create');
+        $album = new Album();
+        return view('albums.create', ['album' => $album]);
     }
 
     public function save()
@@ -188,5 +191,18 @@ class AlbumsController extends Controller
         // $msg = $res ? 'Album ' . $data['name'] . ' creato' : 'album non creato';
         // session()->flash('message', $msg);
         // return redirect()->route('albums');
+    }
+    // & prima del parametro vuoldire passare come riferimento
+    public function processFile($id, Request $req, &$album): void
+    {
+        if ($req->hasFile('album_thumb')) {
+            $file = $req->file('album_thumb');
+            if ($file->isValid()) {
+                // $filename = $file->store(env('ALBUM_THUMB_DIR')); // prende il nome e il percorso di default
+                $filename = '/' . $id . '.' . $file->extension();
+                $file->storeAs(env('ALBUM_THUMB_DIR'), $filename); // con nome custom
+                $album->album_thumb = env('ALBUM_THUMB_DIR') . $filename;
+            }
+        }
     }
 }

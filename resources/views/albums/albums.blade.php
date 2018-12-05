@@ -15,6 +15,9 @@
             @foreach ($albums as $album)
             <li class="list-group-item d-flex justify-content-between">{{$album->album_name}} ({{$album->id}})
                 <div>
+                    @if ($album->album_thumb)
+                        <img width="300" src="{{asset($album->path)}}" title="{{$album->album_name}}" alt="{{$album->album_name}}">
+                    @endif
                     <a id="update-button" href="/albums/{{$album->id}}/edit" class="btn btn-primary">Update</a>
                     <a id="delete-button" href="/albums/{{$album->id}}" class="btn btn-danger">Delete</a>
                 </div>

@@ -9,5 +9,6 @@ $factory->define(App\Models\Album::class, function (Faker $faker) {
         'album_name' => $faker->name,
         'description' => $faker->text,
         'user_id' => User::inRandomOrder()->first()->id,
+        'album_thumb' => $faker->imageUrl(640, 480, $faker->randomElement(['animals', 'business'])),
     ];
 });

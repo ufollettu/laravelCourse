@@ -10,4 +10,16 @@ class Album extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = ['album_name', 'description', 'user_id'];
+
+    // per creare una proprietà da utilizzare fuori dal modello
+    // si crea un metodo così: "get + Nome_proprietà + Attribute"
+    // si richiamerà così: $album->nome_proprietà
+    public function getPathAttribute()
+    {
+        $url = $this->album_thumb;
+        if (stristr($url, 'http') === false) {
+            $url = 'storage/' . $this->album_thumb;
+        }
+        return $url;
+    }
 }

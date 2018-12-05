@@ -1,13 +1,14 @@
 @extends('templates.layout');
 @section('content')
     <h1>Edit Album</h1>
-<form action="/albums/{{$album->id}}" method="POST">
-    <input type="hidden" name="_token" id="_token" value="{{csrf_token()}}">
-    <input type="hidden" name="_method" value="PATCH">
+    <form action="/albums/{{$album->id}}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_token" id="_token" value="{{csrf_token()}}">
+        <input type="hidden" name="_method" value="PATCH">
         <div class="form-group">
             <label for="">Name</label>
-        <input type="text" name="name" id="" value="{{$album->album_name}}" class="form-control" placeholder="Album name">
+            <input type="text" name="name" id="" value="{{$album->album_name}}" class="form-control" placeholder="Album name">
         </div>
+        @include('albums.partials.fileupload')
         <div class="form-group">
             <label for="">Description</label>
             <textarea type="text" name="description" id="" class="form-control" placeholder="Album description">{{$album->description}}</textarea>
