@@ -23,6 +23,13 @@ class PhotosController extends Controller
         'img_path.required' => 'Il campo Immagine è obbligatorio',
     ];
 
+    public function __construct()
+    {
+        // per proteggere tutte le rotte della classe
+        $this->middleware('auth');
+        // per proteggerne solo alcune
+        // $this->middleware('auth')->only(['create', 'edit']);
+    }
     /**
      * Display a listing of the resource.
      *

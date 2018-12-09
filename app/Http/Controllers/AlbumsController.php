@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Storage;
 
 class AlbumsController extends Controller
 {
+
+    public function __construct()
+    {
+        // per proteggere tutte le rotte della classe
+        // $this->middleware('auth');
+        // per proteggerne solo alcune
+        // $this->middleware('auth')->only(['create', 'edit']);
+    }
     public function index(Request $request)
     {
         // return Album::All();
@@ -50,6 +58,9 @@ class AlbumsController extends Controller
         // è l'equivalente di 'SELECT count(*) from photos'
         // with() invece restituisce tutta la collection delle photo relative
         $queryBuilder = Album::orderBy('id', 'DESC')->withCount('photos');
+        // listare solo gli album dell'utente loggato
+        $queryBuilder->where('user_id', $request->user()->id);
+
         if ($request->has('id')) {
             $queryBuilder->where('id', '=', $request->input('id'));
         }
@@ -130,7 +141,7 @@ class AlbumsController extends Controller
         $album = Album::find($id);
         $album->album_name = request()->input('name');
         $album->description = request()->input('description');
-        $album->user_id = 1;
+        $album->user_id = $req->user()->id;
         $this->processFile($id, $req, $album);
         $res = $album->save();
 
@@ -188,7 +199,7 @@ class AlbumsController extends Controller
         $album->album_name = $request->input('name');
         $album->album_thumb = '';
         $album->description = $request->input('description');
-        $album->user_id = 1;
+        $album->user_id = $request->user()->id;
 
         $res = $album->save();
         if ($res) {
