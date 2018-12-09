@@ -45,3 +45,6 @@ Route::get('usersnoalbums', function () {
         ->whereRaw()
         ->get();
 });
+
+// images mappa le route con la risorsa attraverso i metodi del controller
+Route::resource('photos', 'PhotosController');
