@@ -8,7 +8,12 @@
     <h1>New Photo</h1>
     <form action="{{route('photos.store')}}" method="POST" enctype="multipart/form-data">
     @endif
-        <div class="form-group">
+
+    {{-- $errors è iniettata automaticamente
+        alla vista se usi i validators --}}
+        @include('partials.inputerrors')
+
+    <div class="form-group">
             <label for="">Name</label>
             <input
             type="text"

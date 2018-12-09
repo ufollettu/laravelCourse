@@ -1,6 +1,8 @@
 @extends('templates.layout');
 @section('content')
     <h1>Edit Album</h1>
+    @include('partials.inputerrors')
+
     <form action="/albums/{{$album->id}}" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="_token" id="_token" value="{{csrf_token()}}">
         <input type="hidden" name="_method" value="PATCH">

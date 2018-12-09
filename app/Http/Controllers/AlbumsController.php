@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AlbumRequest;
+use App\Http\Requests\AlbumUpdateRequest;
 use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Http\Request;
@@ -114,7 +116,7 @@ class AlbumsController extends Controller
         // return view('albums.edit')->with('album', $album[0]);
     }
 
-    public function store($id, Request $req)
+    public function store($id, AlbumUpdateRequest $req)
     {
         // Eloquent
         // $res = Album::where('id', $id)->update(
@@ -161,7 +163,7 @@ class AlbumsController extends Controller
         return view('albums.create', ['album' => $album]);
     }
 
-    public function save()
+    public function save(AlbumRequest $request)
     {
 
         // Eloquent
@@ -183,9 +185,9 @@ class AlbumsController extends Controller
         // );
         // Oppure
         $album = new Album();
-        $album->album_name = request()->input('name');
+        $album->album_name = $request->input('name');
         $album->album_thumb = '';
-        $album->description = request()->input('description');
+        $album->description = $request->input('description');
         $album->user_id = 1;
 
         $res = $album->save();
