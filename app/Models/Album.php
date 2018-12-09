@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Photo;
 use Illuminate\Database\Eloquent\Model;
 
 class Album extends Model
@@ -21,5 +22,12 @@ class Album extends Model
             $url = 'storage/' . $this->album_thumb;
         }
         return $url;
+    }
+
+    // relazioni in Laravel
+    public function photos()
+    {
+        // 1 a N
+        return $this->hasMany(Photo::class, 'album_id', 'id');
     }
 }

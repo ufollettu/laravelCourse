@@ -18,6 +18,10 @@
                     @if ($album->album_thumb)
                         <img width="300" src="{{asset($album->path)}}" title="{{$album->album_name}}" alt="{{$album->album_name}}">
                     @endif
+                    @if ($album->photos_count)
+                        <a id="update-button" href="/albums/{{$album->id}}/images" class="btn btn-primary">View Images ({{$album->photos_count}})</a>
+                    @endif
+                    {{-- {{$album->photos_count}} restituisce il conteggio delle photo relative al singolo album --}}
                     <a id="update-button" href="/albums/{{$album->id}}/edit" class="btn btn-primary">Update</a>
                     <a id="delete-button" href="/albums/{{$album->id}}" class="btn btn-danger">Delete</a>
                 </div>

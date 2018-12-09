@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Album;
+use App\Models\Photo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AlbumsController extends Controller
 {
@@ -42,7 +44,10 @@ class AlbumsController extends Controller
         // return view('albums.albums', ['albums' => $albums]);
 
         // Eloquent (che usa i model) il primo metodo deve essere statico
-        $queryBuilder = Album::orderBy('id', 'DESC');
+        // withCount('photos') cerca il metodo photo() nel model dell'Album per le relazioni
+        // è l'equivalente di 'SELECT count(*) from photos'
+        // with() invece restituisce tutta la collection delle photo relative
+        $queryBuilder = Album::orderBy('id', 'DESC')->withCount('photos');
         if ($request->has('id')) {
             $queryBuilder->where('id', '=', $request->input('id'));
         }
@@ -53,14 +58,28 @@ class AlbumsController extends Controller
         return view('albums.albums', ['albums' => $albums]);
     }
 
-    public function delete($id)
+    // Type hinting, laravel cerca in automatico l'id del tipo Album
+    public function delete(Album $album)
     {
         // Eloquent
         // $res = Album::where('id', $id)->delete();
         // return $res;
 
         // Oppure
-        $res = Album::find($id)->delete();
+        // $res = Album::find($id)->delete();
+
+        // Oppure con il Type hinting non serve usare find()
+        $thumbnail = $album->album_thumb;
+        // config è un helper che richiama le variabili di configuarazione presenti
+        $disk = config('filesystems.default');
+        $res = $album->delete();
+
+        // per eliminare anche il file thumb dal disco
+        if ($res) {
+            if ($thumbnail && Storage::disk($disk)->has($thumbnail)) {
+                Storage::disk('public')->delete($thumbnail);
+            }
+        }
         // bisogna concatenare una stringa perchè delete() ritorna true
         // mentre la response deve essere stringa
         return ' ' . $res;
@@ -165,10 +184,16 @@ class AlbumsController extends Controller
         // Oppure
         $album = new Album();
         $album->album_name = request()->input('name');
+        $album->album_thumb = '';
         $album->description = request()->input('description');
         $album->user_id = 1;
 
         $res = $album->save();
+        if ($res) {
+            if ($this->processFile($album->id, request(), $album)) {
+                $album->save();
+            }
+        }
 
         // QB
         // $res = DB::table('albums')->insert(
@@ -179,7 +204,8 @@ class AlbumsController extends Controller
         //     ]
         // );
 
-        $msg = $res ? 'Album ' . request()->input('name') . ' creato' : 'album non creato';
+        $name = request()->input('name');
+        $msg = $res ? 'Album ' . $name . ' creato' : 'album non creato';
         session()->flash('message', $msg);
         return redirect()->route('albums');
 
@@ -193,16 +219,30 @@ class AlbumsController extends Controller
         // return redirect()->route('albums');
     }
     // & prima del parametro vuoldire passare come riferimento
-    public function processFile($id, Request $req, &$album): void
+    public function processFile($id, Request $req, &$album): bool
     {
-        if ($req->hasFile('album_thumb')) {
-            $file = $req->file('album_thumb');
-            if ($file->isValid()) {
-                // $filename = $file->store(env('ALBUM_THUMB_DIR')); // prende il nome e il percorso di default
-                $filename = '/' . $id . '.' . $file->extension();
-                $file->storeAs(env('ALBUM_THUMB_DIR'), $filename); // con nome custom
-                $album->album_thumb = env('ALBUM_THUMB_DIR') . $filename;
-            }
+
+        if (!$req->hasFile('album_thumb')) {
+            return false;
         }
+
+        $file = $req->file('album_thumb');
+
+        if (!$file->isValid()) {
+            return false;
+        }
+        // $filename = $file->store(env('ALBUM_THUMB_DIR')); // prende il nome e il percorso di default
+        $filename = '/' . $id . '.' . $file->extension();
+        $file->storeAs(env('ALBUM_THUMB_DIR'), $filename); // con nome custom
+        $album->album_thumb = env('ALBUM_THUMB_DIR') . $filename;
+
+        return true;
+    }
+
+    public function getImages(Album $album)
+    {
+        $images = Photo::where('album_id', $album->id)->get();
+        // compact() serve a passare in maniere compatta le variabili alla vista
+        return view('images.albumimages', compact('album', 'images'));
     }
 }
