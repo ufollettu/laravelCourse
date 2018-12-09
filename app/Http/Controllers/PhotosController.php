@@ -96,7 +96,7 @@ class PhotosController extends Controller
 
         $msg = $res ? 'Photo ' . $photo->name . ' modificata' : 'photo non modificata';
         session()->flash('message', $msg);
-        return redirect()->route('photos.index');
+        return redirect()->route('album.getimages', $photo->album_id);
     }
 
     /**
