@@ -12,7 +12,7 @@
 @if ($photo->img_path)
     <div class="form-group">
         <img width="300"
-            src="{{asset($photo->img_path)}}"
+            src="{{asset($photo->path)}}"
             title="{{$photo->name}}"
             alt="{{$photo->name}}">
     </div>

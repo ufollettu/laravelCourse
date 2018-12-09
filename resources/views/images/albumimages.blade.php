@@ -1,11 +1,11 @@
 @extends('templates.layout');
 @section('content')
-<h1>Images for {{$album->album_name}}</h1>
-@if (session()->has('message'))
-@component('components.alert-info')
-    {{session()->get('message')}}
-@endcomponent
-@endif
+    <h1>Images for {{$album->album_name}}</h1>
+    @if (session()->has('message'))
+        @component('components.alert-info')
+            {{session()->get('message')}}
+        @endcomponent
+    @endif
     <table class="table table-bordered">
         <tr>
             <th>ID</th>
@@ -21,11 +21,11 @@
             <td>{{$image->name}}</td>
             <td>{{$album->album_name}}</td>
             <td>
-                <img width="120px" src="{{asset($image->img_path)}}" alt="{{$image->name}}">
+                <img width="120px" src="{{asset($image->path)}}" alt="{{$image->name}}">
             </td>
             <td>
                     <a href="{{route('photos.destroy', $image->id)}}" class="btn btn-danger">Delete</a>
-                    <a href="{{route('photos.edit', $image->id)}}" class="btn btn-default">Edit</a>
+                    <a href="{{route('photos.edit', $image->id)}}" class="btn btn-primary">Edit</a>
             </td>
         </tr>
         @empty

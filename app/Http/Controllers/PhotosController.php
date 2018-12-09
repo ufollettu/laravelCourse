@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,9 +24,14 @@ class PhotosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $req)
     {
-        //
+        $id = $req->has('album_id') ? $req->input('album_id') : null;
+        $album = Album::firstOrNew(['id' => $id]);
+        $albums = $this->getAlbums();
+
+        $photo = new Photo();
+        return view('images.editimage', compact(['photo', 'album', 'albums']));
     }
 
     /**
@@ -36,7 +42,14 @@ class PhotosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $photo = new Photo();
+        $photo->name = $request->input('name');
+        $photo->description = $request->input('description');
+        $photo->album_id = $request->input('album_id');
+        $this->processFile($photo);
+        $photo->save();
+        return redirect(route('album.getimages', $photo->album_id));
+
     }
 
     /**
@@ -58,7 +71,11 @@ class PhotosController extends Controller
      */
     public function edit(Photo $photo)
     {
-        return view('images.editimage', compact('photo'));
+        $albums = $this->getAlbums();
+        // si riferisce al modello belongsTo del model
+        // va richiamato come proprietà, non come metodo
+        $album = $photo->album;
+        return view('images.editimage', compact(['photo', 'albums', 'album']));
     }
 
     /**
@@ -124,11 +141,17 @@ class PhotosController extends Controller
         if (!$file->isValid()) {
             return false;
         }
+        $imgName = preg_replace('@[a-z0-9]i@', '_', $photo->name);
         // $filename = $file->store(env('ALBUM_THUMB_DIR')); // prende il nome e il percorso di default
-        $filename = $photo->id . '.' . $file->extension();
+        $filename = $imgName . '.' . $file->extension();
         $file->storeAs(env('IMG_DIR') . '/' . $photo->album_id, $filename); // con nome custom
         $photo->img_path = env('IMG_DIR') . $photo->album_id . '/' . $filename;
 
         return true;
+    }
+
+    public function getAlbums()
+    {
+        return Album::orderBy('album_name')->get();
     }
 }

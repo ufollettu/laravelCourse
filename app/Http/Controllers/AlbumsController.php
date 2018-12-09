@@ -241,7 +241,7 @@ class AlbumsController extends Controller
 
     public function getImages(Album $album)
     {
-        $images = Photo::where('album_id', $album->id)->get();
+        $images = Photo::where('album_id', $album->id)->latest()->paginate(env('IMG_PER_PAGE'));
         // compact() serve a passare in maniere compatta le variabili alla vista
         return view('images.albumimages', compact('album', 'images'));
     }
